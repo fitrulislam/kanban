@@ -35,7 +35,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" @click="submitTask()" data-dismiss="modal">Add Task</button>
+            <button type="submit" class="btn btn-primary" :disabled="allOk" @click="submitTask()" data-dismiss="modal">Add Task</button>
           </div>
         </div>
       </div>
@@ -134,7 +134,10 @@ export default {
       title: '',
       desc: '',
       assignedTo: '',
-      point: '',
+      point: 0,
+      titleStatus: false,
+      descStatus: false,
+      assStatus: false,
       detailTitle: '',
       detailDesc: '',
       detailAssigned: '',
@@ -144,6 +147,38 @@ export default {
   },
   firebase: {
     kanban: kanbanRef
+  },
+  watch: {
+    title: function (val) {
+      if (val.length > 0) {
+        this.titleStatus = true
+      } else {
+        this.titleStatus = false
+      }
+    },
+    desc: function (val) {
+      if (val.length > 0) {
+        this.descStatus = true
+      } else {
+        this.descStatus = false
+      }
+    },
+    assignedTo: function (val) {
+      if (val.length > 0) {
+        this.assStatus = true
+      } else {
+        this.assStatus = false
+      }
+    }
+  },
+  computed: {
+    allOk () {
+      if (this.titleStatus === true && this.assStatus === true && this.descStatus === true) {
+        return false
+      } else {
+        return true
+      }
+    }
   },
   methods: {
     addData (key) {
@@ -167,6 +202,7 @@ export default {
       this.title = ''
       this.desc = ''
       this.assignedTo = ''
+      this.point = 0
     },
     removeTask () {
       kanbanRef.child(this.detailKey).remove()
